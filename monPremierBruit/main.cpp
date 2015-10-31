@@ -42,7 +42,7 @@ sf::Image rotation(const sf::Image& image)
         for(int j = 0; j < 600; j++)
         {
             int xToGet = i;
-            int yToGet = (j+4)%600;
+            int yToGet = (j+6)%600;
             toReturn.setPixel(i,j, image.getPixel(xToGet, yToGet));
         }
     }
@@ -126,31 +126,33 @@ int main(int, char const**)
     backgroundBruite.draw(texteEcrit);
     backgroundBruite.display();
     
-    
     /*------------------------*/
     
     /**
-     * Réunion du texte bruité et du background bruite
+     * Réunion du texte bruité et du background bruité
      */
     
     sf::Sprite regroupe;
     
-    
+    bool stop = true;
 
     while (window.isOpen())
     {
+        if(stop)
+        {
         backgroundMouvement = rotation(backgroundMouvement);
         textureBackgroundMouvement.loadFromImage(backgroundMouvement);
         spriteBackgroundMouvement.setTexture(textureBackgroundMouvement);
         
         backgroundBruite.draw(spriteBackgroundMouvement, sf::BlendMultiply);
         backgroundBruite.display();
+        regroupe.setTexture(backgroundBruite.getTexture());
         
         backgroundBruite.draw(spriteTexteBruite, sf::BlendAdd);
         backgroundBruite.display();
         
         regroupe.setTexture(backgroundBruite.getTexture());
-
+        }
         
         sf::Event event;
         while (window.pollEvent(event))
@@ -164,14 +166,27 @@ int main(int, char const**)
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
                 window.close();
             }
+            
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::A) {
+                if(stop == false)
+                    stop = true;
+                else
+                    stop = false;
+            }
         }
 
         // Clear screen
         window.clear();
-        //window.draw(spriteBruitRandom);
-        window.draw(spriteBackgroundMouvement);
+        //window.draw(spriteTexteBruite);
+        window.draw(regroupe);
         // Update the window
         window.display();
+        
+        if(stop){
+        backgroundBruite.clear(sf::Color::White);
+        backgroundBruite.draw(texteEcrit);
+        backgroundBruite.display();
+        }
     }
 
     return EXIT_SUCCESS;
